@@ -50,7 +50,9 @@ class Adafruit_Thermal(Serial):
 	lineSpacing     =  8
 	barcodeHeight   = 50
 	printMode       =  0
-	defaultHeatTime = 60
+	defaultHeatTime = 120
+	defaultHeatDot  = 14    
+	defaultHeatInterval = 75
 
 	def __init__(self, *args, **kwargs):
 		# If no parameters given, use default port & baud rate.
@@ -101,10 +103,10 @@ class Adafruit_Thermal(Serial):
 		self.writeBytes(
 		  27,       # Esc
 		  55,       # 7 (print settings)
-		  20,       # Heat dots (20 = balance darkness w/no jams)
+		  self.defaultHeatDot,       # Heat dots (20 = balance darkness w/no jams)
 		  heatTime, # Lib default = 45
-		  250)      # Heat interval (500 uS = slower but darker)
-
+		  self.defaultHeatInterval)      # Heat interval (500 uS = slower but darker)
+        
 		# Description of print density from page 23 of the manual:
 		# DC2 # n Set printing density
 		# Decimal: 18 35 n
@@ -114,16 +116,16 @@ class Adafruit_Thermal(Serial):
 		# Break time is n(D7-D5)*250us.
 		# (Unsure of the default value for either -- not documented)
 
-		printDensity   = 14 # 120% (can go higher, but text gets fuzzy)
-		printBreakTime =  4 # 500 uS
+		printDensity   = 10 # 120% (can go higher, but text gets fuzzy)
+		printBreakTime =  2 # 500 uS
 
 		self.writeBytes(
 		  18, # DC2
 		  35, # Print density
 		  (printBreakTime << 5) | printDensity)
 
-		self.dotPrintTime = 0.03
-		self.dotFeedTime  = 0.0021
+		# self.dotPrintTime = 0.03
+		# self.dotFeedTime  = 0.0021
 
 
 	# Because there's no flow control between the printer and computer,
@@ -212,9 +214,9 @@ class Adafruit_Thermal(Serial):
 		self.writeBytes(
 		  27,       # Esc
 		  55,       # 7 (print settings)
-		  20,       # Heat dots (20 = balance darkness w/no jams)
+		  self.defaultHeatDot,       # Heat dots (20 = balance darkness w/no jams)
 		  heatTime, # Lib default = 45
-		  250)      # Heat interval (500 uS = slower but darker)
+		  self.defaultHeatInterval)      # Heat interval (500 uS = slower but darker)
 
 
 	def reset(self):
